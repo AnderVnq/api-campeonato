@@ -184,7 +184,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 CORS_ORIGIN_WHITELIST=[
-    'http://localhost:3000'
+    'http://localhost:3000',
     'http://localhost:4200'
 #acá poner las apps de 3 con otros puertos para que accedan a mi api 
 ]
@@ -214,12 +214,12 @@ USE_TZ = True
 
 
 
-
+DEFAULT_FROM_EMAIL="ndrsnvenegas@gmail.com"
 EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST="smtp.gmail.com"
 EMAIL_USE_TLS=True
 EMAIL_PORT=587
-EMAIL_HOST_USER="ndrsnvenegas@gmail.com"
+EMAIL_HOST_USER=DEFAULT_FROM_EMAIL
 EMAIL_HOST_PASSWORD='bdjdjmuvdjkpddkg'
 
 

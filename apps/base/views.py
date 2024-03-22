@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User 
 #from rest_framework.authtoken.views import ObtainAuthToken
@@ -8,6 +9,7 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView 
 #from apps.campeonatos.api.serializer import UserTokenSerializer
 from django.contrib.sessions.models import Session
+from django.contrib.auth.hashers import check_password
 from datetime import datetime
 #from apps.base.authentication import Authentication
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -45,7 +47,7 @@ class Login(TokenObtainPairView):
             username=username,
             password=password
         )
-        if user:
+        if user and check_password(password,user.password):
             login_serializer=self.serializer_class(data=request.data)
             if login_serializer.is_valid():
                 user_serializer=UserSerializer(user)
@@ -56,8 +58,11 @@ class Login(TokenObtainPairView):
                     'message':"inicio de session exitoso"
                 },status=status.HTTP_200_OK)
             return Response({
-                'error':"contraseña o username incorrecto"
+                'error':" error al iniciar session"
             },status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            'error':"contraseña o username incorrecto"
+        },status=status.HTTP_400_BAD_REQUEST)
 
 
 

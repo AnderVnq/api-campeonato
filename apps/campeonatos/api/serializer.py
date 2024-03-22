@@ -5,6 +5,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from apps.encuentros.models import Goles
 from apps.encuentros.api.serializers.general_serializer import GolesSerializer
 from apps.jugadores.models import Jugadores
+
 class CampeonatoSerializer(serializers.ModelSerializer):
     class Meta:
         model=Campeonato
