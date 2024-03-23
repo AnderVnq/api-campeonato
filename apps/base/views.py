@@ -1,22 +1,60 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User 
-#from rest_framework.authtoken.views import ObtainAuthToken
-#from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
-#from rest_framework.authtoken.models import Token
 from rest_framework.generics import GenericAPIView 
-#from apps.campeonatos.api.serializer import UserTokenSerializer
 from django.contrib.sessions.models import Session
 from django.contrib.auth.hashers import check_password
 from datetime import datetime
-#from apps.base.authentication import Authentication
 from rest_framework_simplejwt.views import TokenObtainPairView
 from apps.campeonatos.api.serializer import CustomTokenSerializer
 from apps.users.api.serializer import UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-# Create your views here.
+from firebase_admin import auth
+import firebase_admin
+from firebase_admin import credentials
+
+
+
+cred = credentials.Certificate('fb-auth.json')
+
+firebase_admin.initialize_app(cred)
+
+
+
+
+
+
+class FirebaseLoginRegisterView(GenericAPIView):
+
+    def post (self,request,*args, **kwargs):
+        print(cred.service_account_email)
+        id_token=request.data.get('idToken')
+        try:
+            
+            decode_token=auth.verify_id_token(id_token=id_token)
+            uid=decode_token['uid']
+            email=decode_token['email']
+            print(decode_token)
+            user,created=User.objects.get_or_create(username=email,email=email)
+            if created:
+                user.set_unusable_password()
+                user.save()
+
+                return Response({'message': 'Usuario registrado correctamente'}, status=status.HTTP_201_CREATED)
+        except auth.InvalidIdTokenError:
+            return Response({'error': 'Token de Firebase inválido'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+
+
+
 
 
 
@@ -31,6 +69,23 @@ def validate_file(request,field,update=False):
             if type(request[field])==str:request.__setitem__(field,None)
 
     return request
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
