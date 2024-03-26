@@ -2,6 +2,8 @@ import os
 from decouple import Config, Csv,RepositoryIni
 from dotenv import load_dotenv
 from datetime import timedelta
+from firebase_admin import auth,credentials
+import firebase_admin
 load_dotenv()
 
 
@@ -17,6 +19,14 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+
+
+# cred = credentials.Certificate('prueba2-de8dc-firebase-adminsdk-j3vqi-51bb1c980e.json')
+
+# firebase_admin.initialize_app(cred)
+
+
 
 ALLOWED_HOSTS = []
 
@@ -183,10 +193,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # ]
 
 
-CORS_ORIGIN_WHITELIST=[
+CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
-    'http://localhost:4200'
-#acá poner las apps de 3 con otros puertos para que accedan a mi api 
+    'http://localhost:4200',
+    # Añade aquí otros dominios o puertos que necesiten acceso a tu API
 ]
 
 SIMPLE_JWT={
@@ -204,7 +214,7 @@ SIMPLE_JWT={
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Lima'
 
 USE_I18N = True
 

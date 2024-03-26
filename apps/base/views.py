@@ -1,6 +1,6 @@
-from django.shortcuts import render
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import GenericAPIView 
@@ -11,50 +11,64 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from apps.campeonatos.api.serializer import CustomTokenSerializer
 from apps.users.api.serializer import UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-from firebase_admin import auth
+from firebase_admin import auth,credentials
 import firebase_admin
-from firebase_admin import credentials
+from email_validator import validate_email,EmailNotValidError
+
+
+cred = credentials.Certificate('prueba2-de8dc-firebase-adminsdk-j3vqi-b19b109b3f.json')
+
+default_app=firebase_admin.initialize_app(cred)
 
 
 
-cred = credentials.Certificate('fb-auth.json')
-
-firebase_admin.initialize_app(cred)
 
 
 
+def is_valid_email(email):
+    try:
+        v = validate_email(email)
+        return True
+    except EmailNotValidError as e:
+        return False
 
 
-
-class FirebaseLoginRegisterView(GenericAPIView):
-
-    def post (self,request,*args, **kwargs):
-        print(cred.service_account_email)
-        id_token=request.data.get('idToken')
+class FirebaseRegisterView(GenericAPIView):
+    permission_classes=[]
+    user_serializer=UserSerializer
+    token_custom=CustomTokenSerializer
+    def post (self,request):
+        #
+        #print(default_app.name)
+        print(request)
         try:
-            
-            decode_token=auth.verify_id_token(id_token=id_token)
-            uid=decode_token['uid']
-            email=decode_token['email']
+            idtoken=request.data.get('idToken')
+            decode_token=auth.verify_id_token(idtoken,clock_skew_seconds=1)
             print(decode_token)
-            user,created=User.objects.get_or_create(username=email,email=email)
-            if created:
-                user.set_unusable_password()
+            name=decode_token['name']
+            email=decode_token['email']
+            nombre,apellido=name.split(' ')
+            #print(nombre,apellido)
+            exists=User.objects.filter(username=name,email=email).exists()
+            if exists:
+                return Response({'message':"Usuario ya está registrado"},status=status.HTTP_400_BAD_REQUEST)
+            else:
+                contraseña_generada=nombre+"123"  #User.objects.make_random_password() podemos hacer eso o jalar solo el uid y asi lo ponemos de contra
+                print('contrasela generada',contraseña_generada)
+                hash_password=make_password(contraseña_generada)
+                print(hash_password)
+                user=User.objects.create(
+                    username=name,
+                    email=email,
+                    password=hash_password
+                )
                 user.save()
-
-                return Response({'message': 'Usuario registrado correctamente'}, status=status.HTTP_201_CREATED)
+                user_serializer=UserSerializer(user)
+                return Response({'message': 'Usuario registrado correctamente','data':user_serializer.data}, status=status.HTTP_201_CREATED)
         except auth.InvalidIdTokenError:
             return Response({'error': 'Token de Firebase inválido'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
-
-
-
-
 
 
 
@@ -95,13 +109,20 @@ class Login(TokenObtainPairView):
 
 
     def post(self, request, *args, **kwargs):
-        username= request.data.get('username','')
+        username_or_email= request.data.get('username','')
         password=request.data.get('password','')
 
-        user=authenticate(
-            username=username,
-            password=password
-        )
+        if is_valid_email(username_or_email):
+            user=authenticate(
+                email=username_or_email,
+                password=password     
+            )
+        else:
+            user=authenticate(
+                username=username_or_email,
+                password=password
+            )
+
         if user and check_password(password,user.password):
             login_serializer=self.serializer_class(data=request.data)
             if login_serializer.is_valid():

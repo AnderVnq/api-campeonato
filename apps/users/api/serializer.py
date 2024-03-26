@@ -21,7 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name':instance.first_name,
             'last_name':instance.last_name,
             'date_joined':instance.date_joined,
-            # 'last_login':instancelast_login,
+            'last_login':instance.last_login,
             # 'is_active':instanceis_active
         }
     
@@ -48,9 +48,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 
 class UserPostSerializer(serializers.ModelSerializer):
+    password=serializers.CharField(write_only=True)
     class Meta:
         model=User
-        fields=['username','first_name','last_name','email']
+        fields=['username','password','first_name','last_name','email']
 
 
 class UserPaswordChangeSerializer(serializers.Serializer):
