@@ -104,6 +104,7 @@ REST_FRAMEWORK ={
 
     'DEFAULT_AUTHENTICATION_CLASSES':[
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        
     ],
 
     'DEFAULT_PERMISSION_CLASSES': [
@@ -214,7 +215,7 @@ SIMPLE_JWT={
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'America/Lima'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 

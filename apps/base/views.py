@@ -14,13 +14,14 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from firebase_admin import auth,credentials
 import firebase_admin
 from email_validator import validate_email,EmailNotValidError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 cred = credentials.Certificate('prueba2-de8dc-firebase-adminsdk-j3vqi-b19b109b3f.json')
 
-default_app=firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred)
 
-
+#asdasdasdads rama dev
 
 
 
@@ -85,24 +86,6 @@ def validate_file(request,field,update=False):
     return request
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class Login(TokenObtainPairView):
     serializer_class=CustomTokenSerializer
 
@@ -125,8 +108,10 @@ class Login(TokenObtainPairView):
 
         if user and check_password(password,user.password):
             login_serializer=self.serializer_class(data=request.data)
+            print(login_serializer)
             if login_serializer.is_valid():
                 user_serializer=UserSerializer(user)
+                #login(request,user)
                 return Response({
                     'token':login_serializer.validated_data.get('access'),
                     'refresh-token':login_serializer.validated_data.get('refresh'),
@@ -145,19 +130,84 @@ class Login(TokenObtainPairView):
 
 
 
+class LoginWhitGoogle(GenericAPIView):
+    permission_classes=[]
+    serializer_class=CustomTokenSerializer
+
+    def post(self,request,*args, **kwargs):
+
+        id_token=request.data.get('idToken','')
+        try:
+            decode_token=auth.verify_id_token(id_token)
+            print(decode_token)
+            name=decode_token['name']
+            username=name.replace(' ','')
+            email=decode_token['email']
+            contraseña=decode_token['uid']
+            print(name,email)
+            print(username)
+            print("hola")
+
+            #user=User.objects.filter(username=username,email=email)
+            user=authenticate(
+                username=username,
+                password=contraseña
+               
+            )
+            print(user)
+            
+            if user:
+                #user_serializer=UserSerializer(user)
+                login_serializer= self.serializer_class(data={'username':username,'password':contraseña})
+                print(login_serializer)
+                if login_serializer.is_valid():
+                    user_serializer=UserSerializer(user)
+                    #login(request,user)
+                    return Response({
+                        'token':login_serializer.validated_data.get('access'),
+                        'refresh-token':login_serializer.validated_data.get('refresh'),
+                        'user':user_serializer.data,
+                        'message':"inicio de session exitoso"
+                    },status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    'message':"Usuario no registrado"
+                },status=status.HTTP_400_BAD_REQUEST)
+        except auth.InvalidIdTokenError:
+            return Response({'error': 'Token de Firebase inválido'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+            
+
+
+
+
+
+
+
+
+
+
 class Logout(GenericAPIView):
+    permission_classes=[]
+
     def post(self,request,*args, **kwargs):
         user=User.objects.filter(id=request.data.get('user',0))
         id_user=user.first()
         if user.exists():
-            RefreshToken.for_user(user.first())
+            RefreshToken.for_user(user.first())            
             all_session=Session.objects.filter(expire_date__gte=datetime.now(),session_key__contains=id_user.id)
             if all_session.exists():
                 all_session.delete()
                 return Response({
                     'message':"session cerrada correctamente"
                 },status=status.HTTP_200_OK)
-
+            else:
+                return Response({
+                    'message':"session no iniciada"
+                })
         return Response({
             'error':"error al cerrar session , no existe usuario"
         },status=status.HTTP_400_BAD_REQUEST)
