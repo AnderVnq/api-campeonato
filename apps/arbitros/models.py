@@ -10,12 +10,12 @@ class Arbitro(BaseModel):
     fecha_nacimiento=models.DateField()
     num_telefono=models.CharField(max_length=10)
     tipo = models.CharField(max_length=100)#principal o secundario 
+    dni=models.CharField(max_length=10)
     historical=HistoricalRecords()
 
     class Meta:
         verbose_name='Arbitro'
         verbose_name_plural='Arbitros'
-
 
     @property
     def _history_user(self):

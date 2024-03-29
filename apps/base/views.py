@@ -1,25 +1,26 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import GenericAPIView 
 from django.contrib.sessions.models import Session
 from django.contrib.auth.hashers import check_password
 from datetime import datetime
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 from apps.campeonatos.api.serializer import CustomTokenSerializer
 from apps.users.api.serializer import UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-from firebase_admin import auth,credentials
-import firebase_admin
+from firebase_admin import auth
 from email_validator import validate_email,EmailNotValidError
 from rest_framework_simplejwt.tokens import RefreshToken
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
-cred = credentials.Certificate('prueba2-de8dc-firebase-adminsdk-j3vqi-b19b109b3f.json')
 
-firebase_admin.initialize_app(cred)
+
 
 #asdasdasdads rama dev
 
@@ -38,6 +39,34 @@ class FirebaseRegisterView(GenericAPIView):
     permission_classes=[]
     user_serializer=UserSerializer
     token_custom=CustomTokenSerializer
+
+
+
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            title='Token Google',
+            type=openapi.TYPE_OBJECT,
+            required=['token'],
+            properties={
+                'token': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        ),
+        responses={
+            status.HTTP_200_OK:openapi.Response(
+                None,
+                schema=openapi.Schema(
+                    title='message register',
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message':openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description='message register ok'
+                        )
+                    }
+                )
+            )
+        }
+    )
     def post (self,request):
         #
         #print(default_app.name)
@@ -91,6 +120,36 @@ class Login(TokenObtainPairView):
 
 
 
+
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            title='Obtain-token',
+            type=openapi.TYPE_OBJECT,
+            required=['username','password'],
+            properties={
+                'username':openapi.Schema(type=openapi.TYPE_STRING,title='username'),
+                'password':openapi.Schema(type=openapi.TYPE_STRING,title='password'),
+            }
+        ),
+        responses={
+            status.HTTP_200_OK:openapi.Response(
+                None,
+                schema=openapi.Schema(
+                    title='PasswordChange',
+                    
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'token':openapi.Schema(type=openapi.TYPE_STRING,title='token'),
+                        'refresh-token':openapi.Schema(type=openapi.TYPE_STRING,title='refresh-token'),
+                        'user':openapi.Schema(type=openapi.TYPE_STRING,title='user'),
+                        'message':openapi.Schema(type=openapi.TYPE_STRING)
+                    },
+                    
+                )                  
+            )
+        }
+
+    )
     def post(self, request, *args, **kwargs):
         username_or_email= request.data.get('username','')
         password=request.data.get('password','')
@@ -127,13 +186,35 @@ class Login(TokenObtainPairView):
 
 
 
-
-
-
 class LoginWhitGoogle(GenericAPIView):
     permission_classes=[]
     serializer_class=CustomTokenSerializer
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            title='Login-Google',
+            type=openapi.TYPE_OBJECT,
+            required='acces-token-google',
+            properties={
+                'token-google':openapi.Schema(type=openapi.TYPE_STRING,description='Google-token')
+            }
+        ),
+        responses={
+            status.HTTP_200_OK:openapi.Response(
+                None,
+                schema=openapi.Schema(
+                    title='PasswordChange',
+                    
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message':openapi.Schema(type=openapi.TYPE_STRING,description='Login access sucesfully',)
+                    },
+                    
+                )                  
+            )
+        }
+
+    )
     def post(self,request,*args, **kwargs):
 
         id_token=request.data.get('idToken','')
@@ -179,16 +260,6 @@ class LoginWhitGoogle(GenericAPIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-            
-
-
-
-
-
-
-
-
-
 
 class Logout(GenericAPIView):
     permission_classes=[]
@@ -211,6 +282,47 @@ class Logout(GenericAPIView):
         return Response({
             'error':"error al cerrar session , no existe usuario"
         },status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class CustomObatintokenView(TokenObtainPairView):
+    
+
+
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK:openapi.Response(
+                None,
+                schema=openapi.Schema(
+                    title='Obtain token',
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'access':openapi.Schema(type=openapi.TYPE_STRING,description='access-token'),
+                        'refresh':openapi.Schema(type=openapi.TYPE_STRING,description='resfresh-token')
+                    }
+                )
+            )
+        }
+    )
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        return super().post(request, *args, **kwargs)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

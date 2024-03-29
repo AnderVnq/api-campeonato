@@ -85,7 +85,7 @@ class EquipoViewSet(viewsets.GenericViewSet):
         return Response(equipos_serializer.data,status=status.HTTP_200_OK)
 
 
-    @action(detail=True,methods=['GET'],url_path='jugadores-equipo')
+    @action(detail=True,methods=['GET'],url_path='jugadores')
     def View_players_team(self,request,pk=None):
         equipo=self.get_object(pk)
         equipo_serializer=EquipoJugadoresSerializer(equipo)

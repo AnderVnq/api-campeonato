@@ -38,7 +38,7 @@ class Equipos(BaseModel):
     delegado=models.CharField(max_length=150 , blank=False , null=True)
     foto_delegado=models.ImageField(upload_to='img_delegados',null=True, blank=True)
     logo_equipo=models.ImageField(upload_to='logo_equipos' , null=True , blank=True)
-    grupos=models.ForeignKey(Grupos,on_delete=models.CASCADE, related_name='grupos',null=True)
+    grupos=models.ForeignKey(Grupos,on_delete=models.CASCADE, related_name='grupos')
     historical=HistoricalRecords()
 
 

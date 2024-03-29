@@ -6,6 +6,10 @@ from rest_framework.decorators import action
 from apps.encuentros.api.serializers.encuento_serializer import EncuentroSerializer,EncuentroDetailSerializer,SancionDetailSerializer
 from apps.encuentros.models import *
 from itertools import combinations
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
+
 class EncuentroModelViewSet(viewsets.ModelViewSet):
     model=Encuentro
     serializer_class=EncuentroSerializer
@@ -20,14 +24,86 @@ class EncuentroModelViewSet(viewsets.ModelViewSet):
     
 
 
-
-
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'encuentro': openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                            'fecha': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_DATE),
+                            'campeonato': openapi.Schema(type=openapi.TYPE_STRING)
+                        }
+                    ),
+                    'equipos': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                'nombre': openapi.Schema(type=openapi.TYPE_STRING),
+                                'delegado': openapi.Schema(type=openapi.TYPE_STRING),
+                                'foto_delegado': openapi.Schema(type=openapi.TYPE_STRING),
+                                'logo_equipo': openapi.Schema(type=openapi.TYPE_STRING)
+                            }
+                        )
+                    ),
+                    'score': openapi.Schema(type=openapi.TYPE_STRING),
+                    'arbitros': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                'nombre': openapi.Schema(type=openapi.TYPE_STRING),
+                                'apellido': openapi.Schema(type=openapi.TYPE_STRING),
+                                'tipo': openapi.Schema(type=openapi.TYPE_STRING),
+                                'fecha_nacimiento': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_DATE),
+                                'num_telefono': openapi.Schema(type=openapi.TYPE_STRING)
+                            }
+                        )
+                    ),
+                    'sanciones': openapi.Schema(type=openapi.TYPE_INTEGER)
+                }
+            )
+        }
+    )
     @action(detail=True,methods=['GET'],url_path='detalle-encuentro')
     def detail_encuentro(self,request,pk=None):
         encuentro=self.get_object(pk=pk)
         encuentro_serializer=EncuentroDetailSerializer(encuentro)
         return response.Response(encuentro_serializer.data)
 
+
+
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                    'fecha': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_DATE),
+                    'campeonato': openapi.Schema(type=openapi.TYPE_STRING),
+                    'teams': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                'nombre': openapi.Schema(type=openapi.TYPE_STRING),
+                                'delegado': openapi.Schema(type=openapi.TYPE_STRING)
+                            }
+                        )
+                    ),
+                    'sanciones': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(type=openapi.TYPE_STRING)
+                    )
+                }
+            ),
+        }
+    )
     @action(detail=True,methods=['GET'],url_path='sanciones-encuentro')
     def sancion_detail(self,request,pk=None):
         encuentro=self.get_object(pk=pk)

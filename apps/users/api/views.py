@@ -33,7 +33,7 @@ class UserViewset(viewsets.GenericViewSet):
 
     def get_queryset(self):
         if self.queryset is None:
-            self.queryset=self.model.objects.filter(is_active=True).values('id','username','email','first_name','last_name')
+            self.queryset=self.model.objects.filter(is_active=True).values('id','username','email','first_name','last_name','date_joined')
         
         return self.queryset
     @swagger_auto_schema(
@@ -44,10 +44,12 @@ class UserViewset(viewsets.GenericViewSet):
                 None,
                 schema=openapi.Schema(
                     title='PasswordChange',
+                    
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        'message':openapi.Schema(type=openapi.TYPE_STRING)
-                    }
+                        'message':openapi.Schema(type=openapi.TYPE_STRING,description='message change password',)
+                    },
+                    
                 )                  
             )
         }

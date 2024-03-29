@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         #fields='__all__'
-        fields=['id', 'username', 'email', 'first_name', 'last_name', 'date_joined']
+        fields=['id', 'username', 'email', 'first_name', 'last_name', 'date_joined','last_login']
         #exclude=['date_joined','state','created_date','modified_date','deleted_date']
 
 
@@ -37,6 +37,7 @@ class UserListSerializer(serializers.ModelSerializer):
             'email':instance['email'],
             'first_name':instance['first_name'],
             'last_name':instance['last_name'],
+            'date_joined':instance['date_joined']
         }
     
 class UserUpdateSerializer(serializers.ModelSerializer):
@@ -51,7 +52,7 @@ class UserPostSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True)
     class Meta:
         model=User
-        fields=['username','password','first_name','last_name','email']
+        fields=['username','password','first_name','last_name','email','date_joined']
 
 
 class UserPaswordChangeSerializer(serializers.Serializer):

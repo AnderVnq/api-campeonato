@@ -6,6 +6,9 @@ from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser,MultiPartParser
 from apps.campeonatos.models import Campeonato
 from apps.campeonatos.api.serializer import CampeonatoSerializer,TopGolesSerializer
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 
 class CampeonatoViewSet(viewsets.ModelViewSet):
     #queryset=Campeonato.objects.all()
@@ -59,6 +62,34 @@ class CampeonatoViewSet(viewsets.ModelViewSet):
         campeonato_serializer=self.serializer_class(campeonato)
         return Response(campeonato_serializer.data)
 
+
+
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Schema(
+                title='top-goles-list',
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'campeonato_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                    'nombre': openapi.Schema(type=openapi.TYPE_STRING),
+                    'top-goles': openapi.Schema(
+                        title='top',
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                'rank': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                'nombre': openapi.Schema(type=openapi.TYPE_STRING),
+                                'equipo': openapi.Schema(type=openapi.TYPE_STRING),
+                                'img_jugador': openapi.Schema(type=openapi.TYPE_STRING),
+                                'goles': openapi.Schema(type=openapi.TYPE_INTEGER),
+                            }
+                        )
+                    )
+                }
+            )
+        }
+    )
     @action(detail=True,methods=['GET'],url_path='top-goles')
     def top_goles(self,request,pk=None):
         campeonato=self.get_object(pk=pk)
@@ -66,6 +97,17 @@ class CampeonatoViewSet(viewsets.ModelViewSet):
         return Response(goles_serializer.data)
 
 
+
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            title='Email-acount',
+            type=openapi.TYPE_OBJECT,
+            required=['email'],
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING,title='gmail')
+            }
+        )
+    )
     @action(detail=True,methods=['POST'],url_path='send-email-bases')
     def send_view_bases(self,request,pk=None):
         try:
