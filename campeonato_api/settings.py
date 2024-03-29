@@ -154,19 +154,34 @@ WSGI_APPLICATION = 'campeonato_api.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE':'mssql',
+#         'NAME': 'Campeonatos',
+#         # 'USER':'apis',
+#         # 'PASSWORD':'heaveny2',
+#         'HOST': 'ANDER\SQLSERVER',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#             'Trusted_Connection': 'yes',  # Habilita la autenticación de Windows
+#         },
+#     },
+# }
 DATABASES = {
     'default': {
-        'ENGINE':'mssql',
-        'NAME': 'Campeonatos',
-        # 'USER':'apis',
-        # 'PASSWORD':'heaveny2',
-        'HOST': 'ANDER\SQLSERVER',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Campeonato',
+        'USER': 'root',
+        'PASSWORD': 'heaveny2',
+        'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
+        'PORT': '3306',       # El puerto predeterminado de MySQL es 3306
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-            'Trusted_Connection': 'yes',  # Habilita la autenticación de Windows
+            # Opciones adicionales si es necesario
         },
-    },
+    }
 }
+
+
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 

@@ -5,7 +5,7 @@ from apps.base.models import BaseModel
 
 
 class Campeonato(BaseModel):
-    nombre=models.CharField(max_length=250 , null=True)
+    nombre=models.CharField(max_length=250 , unique=True)
     fecha_inicio=models.DateField()
     fecha_fin=models.DateField()
     tipo=models.CharField(max_length=200)

@@ -16,7 +16,6 @@ class Arbitro(BaseModel):
         verbose_name='Arbitro'
         verbose_name_plural='Arbitros'
 
-
     @property
     def _history_user(self):
         return self.changed_by
