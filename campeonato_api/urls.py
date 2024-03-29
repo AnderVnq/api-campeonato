@@ -5,7 +5,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.contrib import admin
-from apps.base.views import Login,Logout,FirebaseRegisterView,LoginWhitGoogle
+from apps.base.views import Login,Logout,FirebaseRegisterView,LoginWhitGoogle,CustomObatintokenView
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -40,9 +40,9 @@ urlpatterns = [
    path('arbitros/', include('apps.arbitros.api.urls')),
    path('login/',Login.as_view(),name='login'),
    path('logout/',Logout.as_view(),name="logout"),
-   path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+   path('api/token/', CustomObatintokenView.as_view(), name='token_obtain_pair'),
    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-   path('auth/google/',FirebaseRegisterView.as_view(), name='firebase_google_register'),
+   path('register/google/',FirebaseRegisterView.as_view(), name='firebase_google_register'),
    path('login/google/',LoginWhitGoogle.as_view(),name='firebase_login_google')
    #path('refresh-token/',UserToken.as_view(),name='refresh token')
     

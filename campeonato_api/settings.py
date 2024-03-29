@@ -9,7 +9,9 @@ load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+cred = credentials.Certificate('prueba2-de8dc-firebase-adminsdk-j3vqi-b19b109b3f.json')
 
+firebase_admin.initialize_app(cred)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
