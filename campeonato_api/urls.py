@@ -8,7 +8,6 @@ from django.contrib import admin
 from apps.base.views import Login,Logout,FirebaseRegisterView,LoginWhitGoogle,CustomObatintokenView
 
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
 )
 
@@ -33,7 +32,7 @@ urlpatterns = [
    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
    path('admin/', admin.site.urls),
    path('users/',include('apps.users.api.urls')),
-   path('campeonatos/',include('apps.campeonatos.api.urls')),
+   path('campeonatos/',include('apps.campeonatos.api.urls'),name='campeonatos'),
    path('encuentros/',include('apps.encuentros.api.urls')),
    path('equipos/',include('apps.equipos.api.urls')),
    path('jugadores/', include('apps.jugadores.api.urls')),
