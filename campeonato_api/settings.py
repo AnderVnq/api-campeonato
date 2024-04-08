@@ -110,7 +110,7 @@ REST_FRAMEWORK ={
     ],
 
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
     # Resto de tu configuración
 }
@@ -224,6 +224,8 @@ SIMPLE_JWT={
     'BLACKLIST_AFTER_ROTATION':True
 }
 
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -242,13 +244,13 @@ USE_TZ = True
 
 
 
-DEFAULT_FROM_EMAIL="ndrsnvenegas@gmail.com"
+DEFAULT_FROM_EMAIL=os.environ.get("DEFAULT_FROM_EMAIL")
 EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST="smtp.gmail.com"
 EMAIL_USE_TLS=True
 EMAIL_PORT=587
 EMAIL_HOST_USER=DEFAULT_FROM_EMAIL
-EMAIL_HOST_PASSWORD='bdjdjmuvdjkpddkg'
+EMAIL_HOST_PASSWORD=os.environ.get("EMAIL_HOST_PASSWORD")
 
 
 
