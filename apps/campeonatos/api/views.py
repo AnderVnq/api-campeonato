@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser,MultiPartParser
 from apps.campeonatos.models import Campeonato
 from apps.campeonatos.api.serializer import CampeonatoSerializer,TopGolesSerializer
+from apps.users.models import Historical_Emails
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -130,6 +131,11 @@ class CampeonatoViewSet(viewsets.ModelViewSet):
             email=EmailMessage(email_subject,email_body,to=[to_email])
             email.attach_file(pdf)
             email.send()
+            añadir_historico_email=Historical_Emails.objects.create(
+                send_to=request.user.id,
+                asunto=email_subject
+            )
+            añadir_historico_email.save()
             return Response({
                 'message':"informacion enviada con exito"
             },status=status.HTTP_200_OK)

@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema  
 from drf_yasg import openapi
-from apps.users.api.serializer import UserListSerializer,UserSerializer,UserPaswordChangeSerializer,UserPostSerializer
+from apps.users.api.serializer import UserListSerializer,UserSerializer,UserPaswordResetSerializer,UserPostSerializer,UserPasswordChangeSerializer
 
 
 
@@ -36,9 +36,56 @@ class UserViewset(viewsets.GenericViewSet):
             self.queryset=self.model.objects.filter(is_active=True).values('id','username','email','first_name','last_name','date_joined')
         
         return self.queryset
+    
+
+
+
     @swagger_auto_schema(
         operation_description="Change password",
-        request_body=UserPaswordChangeSerializer,
+        request_body=UserPaswordResetSerializer,
+        responses={
+            status.HTTP_200_OK:openapi.Response(
+                None,
+                schema=openapi.Schema(
+                    title='PasswordChange',
+                    
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message':openapi.Schema(type=openapi.TYPE_STRING,description='message reset password',)
+                    },
+                    
+                )                  
+            )
+        }
+    )
+    @action(detail=True,methods=['POST'])
+    def reset_password(self,request,pk=None):
+        user=self.get_object(pk=pk)
+        info_usuario=request.user
+        print("info usuario:",info_usuario.password)
+        print("is aunthenticate",info_usuario.is_authenticated)
+        print("request##############")
+        print(request.data)
+        password_serializer=UserPaswordResetSerializer(data=request.data,context={'request':request})
+        if password_serializer.is_valid():
+            user.set_password(password_serializer.validated_data['validate_password'])
+            user.save()
+            #acá se añade eso del email
+            return Response({
+                'message':"contraseña cambiada correctamente"
+            },status=status.HTTP_200_OK)
+        return Response({
+            'message':"error en la informacion enviada",
+            'errors':password_serializer.errors
+        },status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+    @swagger_auto_schema(
+        operation_description="Change password",
+        request_body=UserPasswordChangeSerializer,
         responses={
             status.HTTP_200_OK:openapi.Response(
                 None,
@@ -55,19 +102,24 @@ class UserViewset(viewsets.GenericViewSet):
         }
     )
     @action(detail=True,methods=['POST'])
-    def set_password(self,request,pk=None):
+    def user_change_password(self,request,pk=None):
         user=self.get_object(pk=pk)
-        password_serializer=UserPaswordChangeSerializer(data=request.data)
+        password_serializer=UserPasswordChangeSerializer(data=request.data,context={'request':request})
         if password_serializer.is_valid():
-            user.set_password(password_serializer.validated_data['password'])
+            user.set_password(password_serializer.validated_data['validate_password'])
             user.save()
             return Response({
-                'message':"contraseña cambiada correctamente"
+                'message':"Contraseña cambiada correctamente"
             },status=status.HTTP_200_OK)
-        return Response({
+        else:
+           return Response({
             'message':"error en la informacion enviada",
             'errors':password_serializer.errors
-        },status=status.HTTP_400_BAD_REQUEST)
+           },status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    #vista para enviar mail de reset password 
 
 
     def list(self,request):
