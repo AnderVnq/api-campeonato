@@ -7,8 +7,6 @@ import time
 class TestSetup(APITestCase):
     
     def setUp(self):
-        
-
         faker = Faker()
         self.login_url='/login/'
         self.user=User.objects.create_superuser(
@@ -32,4 +30,4 @@ class TestSetup(APITestCase):
 
 
     def test_asd(self):
-        print(self.token)
+        pass
