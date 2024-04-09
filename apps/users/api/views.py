@@ -1,6 +1,10 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
+from django.core.mail import EmailMultiAlternatives,EmailMessage,send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.utils import timezone
 from rest_framework import viewsets,status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -8,7 +12,10 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema  
 from drf_yasg import openapi
 from apps.users.api.serializer import UserListSerializer,UserSerializer,UserPaswordResetSerializer,UserPostSerializer,UserPasswordChangeSerializer
-
+from apps.users.models import Historical_Emails
+import jwt
+from datetime import datetime, timedelta
+from django.conf import settings
 
 
 class UserViewset(viewsets.GenericViewSet):
@@ -16,15 +23,15 @@ class UserViewset(viewsets.GenericViewSet):
     serializer_class=UserSerializer
     list_serializer_class=UserListSerializer
     post_serializer_class=UserPostSerializer
+    #permission_classes=[]
 
 
     def get_permissions(self):
-        if self.request.method=='POST':
-            return [AllowAny()]
+        if self.action == 'destroy' or self.action=="update":
+            permission_classes = [IsAuthenticated]
         else:
-            return [IsAuthenticated()]
-
-
+            permission_classes=[]
+        return [permission() for permission in permission_classes]
 
 
     def get_object(self,pk):
@@ -101,7 +108,7 @@ class UserViewset(viewsets.GenericViewSet):
             )
         }
     )
-    @action(detail=True,methods=['POST'])
+    @action(detail=True,methods=['POST'],permission_classes=[IsAuthenticated])
     def user_change_password(self,request,pk=None):
         user=self.get_object(pk=pk)
         password_serializer=UserPasswordChangeSerializer(data=request.data,context={'request':request})
@@ -117,8 +124,52 @@ class UserViewset(viewsets.GenericViewSet):
             'errors':password_serializer.errors
            },status=status.HTTP_400_BAD_REQUEST)
 
-
-
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            title='Email-acount',
+            type=openapi.TYPE_OBJECT,
+            required=['email'],
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING,title='gmail')
+            }
+        )
+    )
+    @action(detail=False,methods=['POST'],url_path='email-reset-password')
+    def send_solicitud(self,request):
+        subject="Reset you password"
+        to_email=request.data['email']
+        token_payload = {
+            'email': to_email,
+            'exp': timezone.now()+ timedelta(hours=1)  # Caduca en 1 hora
+        }
+        token = jwt.encode(token_payload, settings.SECRET_KEY, algorithm='HS256')
+            
+        reset_link = f"https://example.com/reset-password?token={token}"
+        html_message=render_to_string('email_template.html',{'reset_link':reset_link})
+        text_content=strip_tags(html_message)
+        email=EmailMultiAlternatives(
+            subject=subject,
+            # message=message,
+            # text_content=text_content,
+            to=[to_email]
+        )
+        email.attach_alternative(html_message,"text/html")
+        usuarios=User.objects.filter(email=to_email)
+        if not usuarios.exists():
+            return Response({
+                'message': "Ingrese su email correctamente"
+            })
+        usuario=usuarios.first()
+        registro_email=Historical_Emails.objects.create(
+            send_to=usuario,
+            asunto=subject
+        )
+        registro_email.save()
+        email.send()
+        return Response({
+            'message':"email enviado correctamente",
+            'token':token
+        },status=status.HTTP_200_OK)
     #vista para enviar mail de reset password 
 
 
@@ -129,15 +180,16 @@ class UserViewset(viewsets.GenericViewSet):
     
 
 
-    @swagger_auto_schema(
-        operation_description='create User',
-        request_body=post_serializer_class,
-        responses={
-            '201':UserSerializer
-        }
-    )   
-    #@get_permissions
+    # @swagger_auto_schema(
+    #     operation_description='create User',
+    #     request_body=post_serializer_class,
+    #     responses={
+    #         '201':UserSerializer
+    #     }
+    # )   
+    # #@get_permissions
     def create(self,request):
+        #self.permission_classes=[]
         user_serializer=self.post_serializer_class(data=request.data)
         if user_serializer.is_valid():
             validated_data = user_serializer.validated_data
@@ -166,6 +218,7 @@ class UserViewset(viewsets.GenericViewSet):
         },status=status.HTTP_200_OK)
 
     def update(self,request,pk=None):
+        self.permission_classes=[IsAuthenticated]
         user=self.get_object(pk)
         user_serializer=self.serializer_class(user,request.data)
         if user_serializer.is_valid():

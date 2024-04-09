@@ -50,9 +50,19 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class UserPostSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True)
+    email=serializers.CharField()
     class Meta:
         model=User
-        fields=['username','password','first_name','last_name','email','date_joined']
+        fields=['username','password','first_name','last_name','email']
+
+    def validate(self, data):
+
+        email_user=User.objects.filter(email__icontains=data['email'])
+        if email_user.exists():
+            raise serializers.ValidationError('el email ya está en uso')
+        
+        return data
+
 
 
 class UserPaswordResetSerializer(serializers.Serializer):

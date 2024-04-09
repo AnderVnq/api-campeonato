@@ -1,5 +1,6 @@
-from django.core.mail import send_mail,EmailMessage
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives,EmailMessage
 from rest_framework import viewsets,status
 from rest_framework.response import Response 
 from rest_framework.decorators import action
@@ -121,7 +122,7 @@ class CampeonatoViewSet(viewsets.ModelViewSet):
             }
             if 'master' in campeonato.tipo:
                 pdf=rutas_bases['master']
-            elif 'libre' in campeonato.tipo and 'verano' in campeonato.tipo:
+            elif 'libre' in campeonato.tipo.lower() and 'verano' in campeonato.nombre.lower():
                 pdf=rutas_bases['libre_verano']
             else:
                 pdf=rutas_bases['libre_invierno']
@@ -131,8 +132,9 @@ class CampeonatoViewSet(viewsets.ModelViewSet):
             email=EmailMessage(email_subject,email_body,to=[to_email])
             email.attach_file(pdf)
             email.send()
+            usuario=User.objects.get(id=request.user.id)
             añadir_historico_email=Historical_Emails.objects.create(
-                send_to=request.user.id,
+                send_to=usuario,
                 asunto=email_subject
             )
             añadir_historico_email.save()
