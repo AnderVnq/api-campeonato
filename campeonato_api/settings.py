@@ -4,12 +4,15 @@ from dotenv import load_dotenv
 from datetime import timedelta
 from firebase_admin import auth,credentials
 import firebase_admin
+import dj_database_url
+
 load_dotenv()
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-cred = credentials.Certificate('prueba2-de8dc-firebase-adminsdk-j3vqi-b19b109b3f.json')
+firebase_credentials_path = os.environ.get('FIREBASE_CREDENTIALS_PATH')
+cred = credentials.Certificate(firebase_credentials_path)
 
 firebase_admin.initialize_app(cred)
 
@@ -17,11 +20,11 @@ firebase_admin.initialize_app(cred)
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
-
+#SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+DEBUG = 'RENDER' not in os.environ
 
 
 # cred = credentials.Certificate('prueba2-de8dc-firebase-adminsdk-j3vqi-51bb1c980e.json')
@@ -33,6 +36,11 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+
 
 BASE_APPS = [
     'django.contrib.admin',
@@ -81,14 +89,10 @@ SWAGGER_SETTINGS={
 
 
 
-
-# SWAGGER_APPS={
-#     'DOC_EXPANSION':'none'
-# }
-
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -167,18 +171,24 @@ WSGI_APPLICATION = 'campeonato_api.wsgi.application'
 #         },
 #     },
 # }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'Campeonato',
+#         'USER': 'root',
+#         'PASSWORD': 'heaveny2',
+#         'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
+#         'PORT': '3306',       # El puerto predeterminado de MySQL es 3306
+#         'OPTIONS': {
+#             # Opciones adicionales si es necesario
+#         },
+#     }
+# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Campeonato',
-        'USER': 'root',
-        'PASSWORD': 'heaveny2',
-        'HOST': 'localhost',  # O la dirección IP de tu servidor MySQL
-        'PORT': '3306',       # El puerto predeterminado de MySQL es 3306
-        'OPTIONS': {
-            # Opciones adicionales si es necesario
-        },
-    }
+   'default': dj_database_url.config(
+        default='mysql://root:heaveny2@localhost:3306/Campeonato',
+        conn_max_age=600
+    )
 }
 
 
@@ -201,16 +211,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
-#acá poner las apps de 3 con otros puertos para que accedan a mi api 
-# CORS_ALLOWED_ORIGINS = [
-#     "https://example.com",
-#     "https://sub.example.com",
-#     "http://localhost:8080",
-#     "http://127.0.0.1:9000",
-# ]
-
-
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'http://localhost:4200',
@@ -225,11 +225,6 @@ SIMPLE_JWT={
 }
 
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
-
-#TOKEN_EXPIRED_AFTER_SECONDS=900
 
 
 LANGUAGE_CODE = 'en-us'
@@ -263,3 +258,6 @@ STATIC_URL = '/static/'
 STATICFILES=(BASE_DIR,'static')
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
