@@ -11,19 +11,19 @@ class Arbitro(BaseModel):
     num_telefono=models.CharField(max_length=10)
     tipo = models.CharField(max_length=100)#principal o secundario 
     dni=models.CharField(max_length=10)
-    historical=HistoricalRecords()
+    #historical=HistoricalRecords()
 
     class Meta:
         verbose_name='Arbitro'
         verbose_name_plural='Arbitros'
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
     
-    @_history_user.setter
-    def _history_user(self,value):
-        self.changed_by=value    
+    # @_history_user.setter
+    # def _history_user(self,value):
+    #     self.changed_by=value    
 
     def __str__(self) -> str:
         return self.nombre

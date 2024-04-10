@@ -21,15 +21,15 @@ class Jugadores(BaseModel):
     equipo=models.ForeignKey(Equipos,on_delete=models.CASCADE , related_name='jugadores')
     foto=models.ImageField(upload_to='jugadores/foto',blank=True,null=True)
     direccion=models.CharField(max_length=150 , null=True)
-    historical=HistoricalRecords()
+    # historical=HistoricalRecords()
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
     
-    @_history_user.setter
-    def _history_user(self,value):
-        self.changed_by=value
+    # @_history_user.setter
+    # def _history_user(self,value):
+    #     self.changed_by=value
 
 
     def __str__(self) -> str:

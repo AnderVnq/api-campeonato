@@ -16,15 +16,15 @@ class Encuentro(BaseModel):
     equipo_visitante=models.ForeignKey(Equipos,on_delete=models.CASCADE,related_name='equipo_visitante')
     fecha=models.DateField()
     arbitros=models.ManyToManyField(Arbitro)
-    historical=HistoricalRecords()
+    # historical=HistoricalRecords()
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
     
-    @_history_user.setter
-    def _history_user(self,value):
-        self.changed_by=value
+    # @_history_user.setter
+    # def _history_user(self,value):
+    #     self.changed_by=value
 
     
     class Meta:
@@ -40,16 +40,16 @@ class Goles(BaseModel):
     encuentro = models.ForeignKey(Encuentro, on_delete=models.CASCADE , related_name='goles')
     jugador = models.ForeignKey(Jugadores, on_delete=models.CASCADE , related_name='goles_jugador')
     minuto=models.PositiveIntegerField()
-    historical=HistoricalRecords()
+    # historical=HistoricalRecords()
 
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
     
-    @_history_user.setter
-    def _history_user(self,value):
-        self.changed_by=value
+    # @_history_user.setter
+    # def _history_user(self,value):
+    #     self.changed_by=value
 
     
     class Meta:
@@ -65,16 +65,16 @@ class Sancion(BaseModel):
     tipo = models.CharField(max_length=50)  # Tarjeta amarilla, tarjeta roja, etc.
     minuto = models.PositiveIntegerField()
     motivo = models.TextField()
-    historical=HistoricalRecords()
+    # historical=HistoricalRecords()
 
 
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
     
-    @_history_user.setter
-    def _history_user(self,value):
-        self.changed_by=value
+    # @_history_user.setter
+    # def _history_user(self,value):
+    #     self.changed_by=value
     class Meta:
         verbose_name='Sancion'
         verbose_name_plural='Sanciones'
