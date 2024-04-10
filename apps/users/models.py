@@ -9,16 +9,16 @@ class  Historical_Emails(BaseModel):
 
     send_to=models.ForeignKey(User,on_delete=models.CASCADE , related_name="email_send_user")
     asunto=models.CharField(max_length=250)
-    historical=HistoricalRecords()
+    # historical=HistoricalRecords()
 
     
-    @property
-    def _history_user(self):
-        return self.changed_by
+    # @property
+    # def _history_user(self):
+    #     return self.changed_by
     
-    @_history_user.setter
-    def _history_user(self,value):
-        self.changed_by=value
+    # @_history_user.setter
+    # def _history_user(self,value):
+    #     self.changed_by=value
 
 
     def __str__(self) -> str:
