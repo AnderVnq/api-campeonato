@@ -50,10 +50,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class UserPostSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True)
+    is_superuser=serializers.CharField(write_only=True)
     email=serializers.CharField()
     class Meta:
         model=User
-        fields=['username','password','first_name','last_name','email']
+        fields=['username','password','first_name','last_name','email','is_superuser']
 
     def validate(self, data):
 
