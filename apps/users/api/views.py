@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
 from django.core.mail import EmailMultiAlternatives,EmailMessage,send_mail
@@ -12,7 +11,7 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema  
 from drf_yasg import openapi
 from apps.users.api.serializer import UserListSerializer,UserSerializer,UserPaswordResetSerializer,UserPostSerializer,UserPasswordChangeSerializer
-from apps.users.models import Historical_Emails
+from apps.users.models import Historical_Emails,User
 import jwt
 from datetime import datetime, timedelta
 from django.conf import settings
@@ -40,7 +39,7 @@ class UserViewset(viewsets.GenericViewSet):
 
     def get_queryset(self):
         if self.queryset is None:
-            self.queryset=self.model.objects.filter(is_active=True).values('id','username','email','first_name','last_name','date_joined')
+            self.queryset=self.model.objects.filter(is_active=True).values('id','username','email','first_name','last_name','date_joined','image')
         
         return self.queryset
     

@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives,EmailMessage
 from rest_framework import viewsets,status
 from rest_framework.response import Response 
@@ -10,7 +9,7 @@ from apps.campeonatos.api.serializer import CampeonatoSerializer,TopGolesSeriali
 from apps.users.models import Historical_Emails
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+from apps.users.models import User
 
 class CampeonatoViewSet(viewsets.ModelViewSet):
     #queryset=Campeonato.objects.all()

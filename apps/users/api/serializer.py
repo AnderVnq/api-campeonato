@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from apps.users.models import User
 
 
 
@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         #fields='__all__'
-        fields=['id', 'username', 'email', 'first_name', 'last_name', 'date_joined','last_login']
+        fields=['id', 'username', 'email','first_name', 'last_name', 'date_joined','last_login','image']
         #exclude=['date_joined','state','created_date','modified_date','deleted_date']
 
 
@@ -22,13 +22,13 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name':instance.last_name,
             'date_joined':instance.date_joined,
             'last_login':instance.last_login,
+            'image':instance.image,
             # 'is_active':instanceis_active
         }
     
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-
 
     def to_representation(self, instance):
         return {
@@ -37,13 +37,14 @@ class UserListSerializer(serializers.ModelSerializer):
             'email':instance['email'],
             'first_name':instance['first_name'],
             'last_name':instance['last_name'],
+            'image':instance['image'],
             'date_joined':instance['date_joined']
         }
     
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        fields=['username','email','first_name','last_name']
+        fields=['username','email','first_name','last_name','image']
 
 
 
@@ -54,7 +55,7 @@ class UserPostSerializer(serializers.ModelSerializer):
     email=serializers.CharField()
     class Meta:
         model=User
-        fields=['username','password','first_name','last_name','email','is_superuser']
+        fields=['username','password','first_name','last_name','email','image']
 
     def validate(self, data):
 

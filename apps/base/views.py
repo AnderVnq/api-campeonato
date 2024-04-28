@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -17,6 +16,7 @@ from email_validator import validate_email,EmailNotValidError
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from apps.users.models import User
 
 
 
