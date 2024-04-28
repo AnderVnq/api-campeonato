@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -17,6 +16,7 @@ from email_validator import validate_email,EmailNotValidError
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from apps.users.models import User
 
 
 
@@ -153,7 +153,8 @@ class Login(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         username_or_email= request.data.get('username','')
         password=request.data.get('password','')
-
+        print(username_or_email)
+        print(password)
         if is_valid_email(username_or_email):
             user=authenticate(
                 email=username_or_email,
@@ -168,6 +169,7 @@ class Login(TokenObtainPairView):
         if user and check_password(password,user.password):
             login_serializer=self.serializer_class(data=request.data)
             print(login_serializer)
+            print("serializer login")
             if login_serializer.is_valid():
                 user_serializer=UserSerializer(user)
                 #login(request,user)
@@ -236,7 +238,6 @@ class LoginWhitGoogle(GenericAPIView):
                
             )
             print(user)
-            
             if user:
                 #user_serializer=UserSerializer(user)
                 login_serializer= self.serializer_class(data={'username':username,'password':contraseña})

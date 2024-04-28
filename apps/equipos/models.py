@@ -1,12 +1,6 @@
 from django.db import models
-from django.db.models import Model
 from apps.base.models import BaseModel
 from apps.campeonatos.models import Grupos
-from simple_history.models import HistoricalRecords
-# Create your models here.
-
-
-
 
 
 # class Grupos(BaseModel):

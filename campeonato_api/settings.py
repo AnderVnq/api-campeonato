@@ -225,7 +225,7 @@ SIMPLE_JWT={
 }
 
 
-
+AUTH_USER_MODEL = 'users.User' 
 
 LANGUAGE_CODE = 'en-us'
 
@@ -260,4 +260,4 @@ MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'      
