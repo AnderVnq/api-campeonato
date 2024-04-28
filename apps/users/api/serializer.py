@@ -8,12 +8,12 @@ from apps.users.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        #fields='__all__'
-        fields=['id', 'username', 'email','first_name', 'last_name', 'date_joined','last_login','image']
+        fields='__all__'
+        #fields=['id', 'username', 'email','first_name', 'last_name', 'date_joined','last_login','image']
         #exclude=['date_joined','state','created_date','modified_date','deleted_date']
 
 
-    def to_representation(self, instance):
+    def to_representation(self, instance:User):
         return {
             'id':instance.id,
             'username':instance.username,
@@ -22,8 +22,8 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name':instance.last_name,
             'date_joined':instance.date_joined,
             'last_login':instance.last_login,
-            'image':instance.image,
-            # 'is_active':instanceis_active
+            'image':instance.image.url if instance.image !='' and instance.image else '',
+            'date_joined':instance.date_joined
         }
     
 class UserListSerializer(serializers.ModelSerializer):
@@ -51,7 +51,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class UserPostSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True)
-    is_superuser=serializers.CharField(write_only=True)
     email=serializers.CharField()
     class Meta:
         model=User

@@ -153,7 +153,8 @@ class Login(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         username_or_email= request.data.get('username','')
         password=request.data.get('password','')
-
+        print(username_or_email)
+        print(password)
         if is_valid_email(username_or_email):
             user=authenticate(
                 email=username_or_email,
@@ -168,6 +169,7 @@ class Login(TokenObtainPairView):
         if user and check_password(password,user.password):
             login_serializer=self.serializer_class(data=request.data)
             print(login_serializer)
+            print("serializer login")
             if login_serializer.is_valid():
                 user_serializer=UserSerializer(user)
                 #login(request,user)
@@ -236,7 +238,6 @@ class LoginWhitGoogle(GenericAPIView):
                
             )
             print(user)
-            
             if user:
                 #user_serializer=UserSerializer(user)
                 login_serializer= self.serializer_class(data={'username':username,'password':contraseña})
