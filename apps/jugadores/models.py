@@ -14,22 +14,14 @@ from simple_history.models import HistoricalRecords
 class Jugadores(BaseModel):
 
     nombre=models.CharField(max_length=100)
-    apellidos=models.CharField(max_length=100)
+    apellido_pat=models.CharField(max_length=100)
+    apellido_mat=models.CharField(max_length=100,default=None)
     fecha_nacimiento=models.DateField(null=False , blank=False)
     posicion_jugador=models.CharField(max_length=200)
     imagen_dni=models.ImageField(upload_to='jugadores/dni',blank=True,null=True)
     equipo=models.ForeignKey(Equipos,on_delete=models.CASCADE , related_name='jugadores')
     foto=models.ImageField(upload_to='jugadores/foto',blank=True,null=True)
     direccion=models.CharField(max_length=150 , null=True)
-    # historical=HistoricalRecords()
-
-    # @property
-    # def _history_user(self):
-    #     return self.changed_by
-    
-    # @_history_user.setter
-    # def _history_user(self,value):
-    #     self.changed_by=value
 
 
     def __str__(self) -> str:

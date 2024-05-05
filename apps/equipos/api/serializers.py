@@ -15,7 +15,6 @@ class EquipoSerializer(serializers.ModelSerializer):
             'delegado':instance.delegado,
             'foto_delegado': instance.foto_delegado.url if instance.foto_delegado != '' and instance.foto_delegado else '',
             'logo_equipo':instance.logo_equipo.url if instance.logo_equipo !='' and instance.logo_equipo else '',
-            'grupo':instance.grupos.nombre if instance.grupos is not None else ''
 
         }
     
@@ -31,7 +30,7 @@ class EquiposListSerializer(serializers.ModelSerializer):
             'delegado':instance['delegado'],
             'foto_delegado':instance['foto_delegado'],
             'logo_equipo':instance['logo_equipo'],
-            'grupo':instance['grupos__nombre'] if instance['grupos__nombre'] !=None and instance['grupos__nombre']!= None else ''
+            #'grupo':instance['grupos__nombre'] if instance['grupos__nombre'] !=None and instance['grupos__nombre']!= None else ''
         }
     
 
@@ -52,7 +51,8 @@ class EquipoJugadoresSerializer(serializers.ModelSerializer):
             {
                 'id': jugador.id,
                 'nombre': jugador.nombre,
-                'apellidos': jugador.apellidos,
+                'apellido_pat': jugador.apellido_pat,
+                'apellido_mat': jugador.apellido_mat,
                 'fecha_nacimiento': jugador.fecha_nacimiento,
                 'posicion_jugador': jugador.posicion_jugador,
                 'imagen_dni': jugador.imagen_dni.url if jugador.imagen_dni else '',

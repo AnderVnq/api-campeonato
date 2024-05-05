@@ -12,7 +12,8 @@ class JugadorSerializer(serializers.ModelSerializer):
         return {
             'id':instance.id,
             'nombre':instance.nombre,
-            'apellidos':instance.apellidos,
+            'apellido_pat':instance.apellido_pat,
+            'apellido_mat':instance.apellido_mat,
             'fecha_nacimiento':instance.fecha_nacimiento,
             'posicion_jugador':instance.posicion_jugador,
             'imagen_dni':instance.imagen_dni.url if instance.imagen_dni!= '' else '',
@@ -31,7 +32,8 @@ class JugadorListSerializer(serializers.ModelSerializer):
         return {
             'id':instance['id'],
             'nombre':instance['nombre'],
-            'apellidos':instance['apellidos'],
+            'apellidos':instance['apellido_pat'],
+            'apellidos':instance['apellido_mat'],
             'fecha_nacimiento':instance['fecha_nacimiento'],
             'posicion_jugador':instance['posicion_jugador'],
             'imagen_dni':instance['imagen_dni'],

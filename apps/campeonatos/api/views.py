@@ -1,11 +1,11 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.core.mail import EmailMultiAlternatives,EmailMessage
 from rest_framework import viewsets,status
 from rest_framework.response import Response 
 from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser,MultiPartParser
-from apps.campeonatos.models import Campeonato
-from apps.campeonatos.api.serializer import CampeonatoSerializer,TopGolesSerializer
+from apps.campeonatos.models import *
+from apps.campeonatos.api.serializer import *
 from apps.users.models import Historical_Emails
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -146,7 +146,13 @@ class CampeonatoViewSet(viewsets.ModelViewSet):
                 'message':"Error al enviar informacion",
                 'errors':error
             },status=status.HTTP_400_BAD_REQUEST)
-
+    
+    @action(detail=True,methods=['GET'],url_path='equipos_participantes')
+    def campeonato_teams(self,request,pk):
+        campeonato_equipos = get_list_or_404(EquiposCampeonatos, campeonato_id=pk)
+        serializer = EquiposCampeonatosSerializer(campeonato_equipos)
+        return Response(serializer.data)
+        
 
 
 

@@ -172,10 +172,13 @@ class Login(TokenObtainPairView):
             print("serializer login")
             if login_serializer.is_valid():
                 user_serializer=UserSerializer(user)
-                #login(request,user)
+                created_datetime=datetime.fromtimestamp(login_serializer.validated_data.get('created'))
+                expires_datetime=datetime.fromtimestamp(login_serializer.validated_data.get('expires'))
                 return Response({
                     'token':login_serializer.validated_data.get('access'),
                     'refresh-token':login_serializer.validated_data.get('refresh'),
+                    'created_at': created_datetime,
+                    'expires_at':expires_datetime,
                     'user':user_serializer.data,
                     'message':"inicio de session exitoso"
                 },status=status.HTTP_200_OK)
@@ -307,32 +310,6 @@ class CustomObatintokenView(TokenObtainPairView):
     )
     def post(self, request: Request, *args, **kwargs) -> Response:
         return super().post(request, *args, **kwargs)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

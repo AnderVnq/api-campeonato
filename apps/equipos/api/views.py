@@ -36,7 +36,7 @@ class EquipoViewSet(viewsets.GenericViewSet):
 
     def get_queryset(self):
         if self.queryset is None:
-            self.queryset=self.model.objects.filter(state=True).values('id','nombre','delegado','foto_delegado','logo_equipo','grupos__nombre')
+            self.queryset=self.model.objects.filter(state=True).values('id','nombre','delegado','foto_delegado','logo_equipo')
         
         return self.queryset
     

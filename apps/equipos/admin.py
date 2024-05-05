@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.equipos.models import Equipos,Grupos
+from apps.equipos.models import Equipos
 # Register your models here.
 
 

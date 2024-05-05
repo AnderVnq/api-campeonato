@@ -23,7 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
             'date_joined':instance.date_joined,
             'last_login':instance.last_login,
             'image':instance.image.url if instance.image !='' and instance.image else '',
-            'date_joined':instance.date_joined
+            'date_joined':instance.date_joined,
+            'is_admin':instance.is_superuser,
+            'is_delegado':instance.is_staff
         }
     
 class UserListSerializer(serializers.ModelSerializer):
@@ -54,7 +56,7 @@ class UserPostSerializer(serializers.ModelSerializer):
     email=serializers.CharField()
     class Meta:
         model=User
-        fields=['username','password','first_name','last_name','email','image']
+        fields=['username','password','first_name','last_name','email']
 
     def validate(self, data):
 
